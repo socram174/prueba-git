@@ -2,16 +2,22 @@ import React, { useState } from 'react';
 
 const DataTable = ({ data }) => {
   const [filteredData, setFilteredData] = useState(data);
-  const [filterCriteria, setFilterCriteria] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleFilterChange = (e) => {
+  const handleSearchChange = (e) => {
     const keyword = e.target.value;
-    setFilterCriteria(keyword);
+    setSearchQuery(keyword);
 
-    // Perform filtering logic based on keyword
-    const filtered = data.filter((item) =>
-      item.name.toLowerCase().includes(keyword.toLowerCase())
-    );
+    // Perform filtering logic based on searchQuery
+    const filtered = data.filter((item) => {
+      const nameMatch = item.name
+        .toLowerCase()
+        .includes(keyword.toLowerCase());
+      const ageMatch = item.age.toString().includes(keyword);
+
+      return nameMatch || ageMatch; // Match if either name or age matches
+    });
+
     setFilteredData(filtered);
   };
 
@@ -19,9 +25,9 @@ const DataTable = ({ data }) => {
     <div>
       <input
         type="text"
-        value={filterCriteria}
-        onChange={handleFilterChange}
-        placeholder="Filter by name..."
+        value={searchQuery}
+        onChange={handleSearchChange}
+        placeholder="Search by name or age..."
       />
       <table>
         <thead>
