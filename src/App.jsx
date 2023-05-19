@@ -1,45 +1,112 @@
-import { useState,useEffect } from 'react'
-import './App.css'
-import DataTable from './table'
+import { useState, useEffect } from "react";
+import "./App.css";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import TransitionsModal from "./modal";
+
 
 function App() {
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const [data, setData] = useState([{"name":"Marcos Silva","age":25},{"name":"Marcelo Alejandro","age":23},{"name":"Juan Perez","age":78}])
-  const [changer, setChanger] = useState(0);
+  const handleSearchChange = (e) => {
+    const keyword = e.target.value;
+    setSearchQuery(keyword);
 
-  useEffect(() => {
-    let newData = data;
-    newData.push({"name":"xd","age":30});
-    setData(newData);
-  }, [changer]);
+    // Perform filtering logic based on searchQuery
+    const filtered = data.filter((item) => {
+      const nameMatch = item.name.toLowerCase().includes(keyword.toLowerCase());
+      const codeMatch = item.code.toString().includes(keyword);
+      const descriptionMatch = item.description.toLowerCase().includes(keyword.toLowerCase())
 
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    var num = Math.floor(Math.random() * 1000);
-    setChanger(num);
-    e.target.reset();
+      return nameMatch || codeMatch || descriptionMatch; // Match if either name or code or description matches
+    });
+
+    setFilteredData(filtered);
   };
 
+  async function fetchData() {
+    setLoading(true);
+    console.log("fetching data...");
+    const response = await fetch("http://20.231.202.18:8000/api/form");
+    const forms = await response.json();
+    setData(forms);
+    setFilteredData(forms);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchData().then(() => {setLoading(false)});
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(e.target.name.value);
+  };
 
   return (
     <>
+      <div>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search by code, name or description..."
+        />
 
-
-      <form onSubmit={handleSubmit}>
-        <label htmlFor='name'>Name</label>
-        <input type='text' id='name' name='name' required/>
-        <label htmlFor='email'>Email</label>
-        <input type='email' id='email' name='email' required/>
-        <label htmlFor='password'>Password</label>
-        <input type='password' id='password' name='password' required/>
-
-        <button type='submit'>Submit</button>
-      </form>
-
-      <DataTable data={data} />
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650, minHeight:300 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">CODE</TableCell>
+                <TableCell align="center">NAME</TableCell>
+                <TableCell align="center">DESCRIPTION</TableCell>
+                <TableCell align="center">ACTIONS 
+                <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <TransitionsModal type={"edit"} updateTable={fetchData}/>
+                      <TransitionsModal type={"delete"} updateTable={fetchData}/>
+                      
+                    </Stack>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ?("FETCHING DATA..."):(
+                <>
+                                {filteredData.map((item) => (
+                <TableRow
+                  key={item.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="center" component="th" scope="row">
+                    {item.code}
+                  </TableCell>
+                  <TableCell align="center">{item.name}</TableCell>
+                  <TableCell align="center">{item.description}</TableCell>
+                </TableRow>
+              ))}
+                </>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

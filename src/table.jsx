@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 
 const DataTable = ({ data }) => {
   const [filteredData, setFilteredData] = useState(data);
@@ -29,24 +28,41 @@ const DataTable = ({ data }) => {
         onChange={handleSearchChange}
         placeholder="Search by name or age..."
       />
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Age</th>
-            {/* Add more table headers as needed */}
-          </tr>
-        </thead>
-        <tbody>
+
+      <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell align='center'>Name</TableCell>
+            <TableCell align='left'>Age</TableCell>
+            <TableCell align='center'>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {filteredData.map((item) => (
-            <tr key={item.id}>
-              <td>{item.name}</td>
-              <td>{item.age}</td>
-              {/* Add more table cells as needed */}
-            </tr>
+            <TableRow
+              key={item.name}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell align="center" component="th" scope="row">
+                {item.name}
+              </TableCell>
+              <TableCell align="left">{item.age}</TableCell>
+              <TableCell >
+                <Stack direction="row" spacing={1} alignItems={"center"} justifyContent={"center"}>
+                    <Button variant="contained" color="success">
+                        Create
+                    </Button>
+                    <Button variant="outlined" color="error">
+                        Delete
+                    </Button>
+                </Stack>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
+    </TableContainer>
     </div>
   );
 };
