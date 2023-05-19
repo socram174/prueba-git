@@ -23,19 +23,50 @@ const style = {
   borderRadius: 2,
 };
 
-export default function TransitionsModal({ type,updateTable }) {
+export default function TransitionsModal({ type,form}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const {setData,setFilteredData} = useContext(DataContext);
 
-  const handleDelete = async (e) => {
+
+  const updateTable = async()=>{
+      handleClose();
+      const response = await fetch("http://20.231.202.18:8000/api/form");
+      const forms = await response.json();
+      setData(forms);
+      setFilteredData(forms);
+
+  }
+
+  
+  const handleDelete = async (e) => { //Se elimina el form por el id
     e.preventDefault();
-    const formId = e.target.id.value;
-    //aqui va el fetch para borrar
-    setData(data);
-    setFilteredData(data);
+    await fetch(`http://20.231.202.18:8000/api/form/${form.id}`,{
+      method:"DELETE",
+      headers:{"Content-Type":"application/json"}
+    }).then(()=>{
+      updateTable();
+    });
+
   };
+
+  const handleEdit = async (e)=> { //El codigo es string de 5 caracteres
+    e.preventDefault();
+    const {code,name,description} = e.target;
+      await fetch(`http://20.231.202.18:8000/api/form/${form.id}`,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({"code":code.value,
+                "name": name.value,
+                "description":description.value              
+              })
+      }).then(()=> {
+        updateTable();
+      });
+    
+    
+  }
 
   return (
     <div>
@@ -74,29 +105,43 @@ export default function TransitionsModal({ type,updateTable }) {
         <Fade in={open}>
           {type === "edit" ? (
             <Box sx={style} border={"2px solid green"}>
-              <h1>Edit form</h1>
-              <Typography
-                id="transition-modal-title"
-                variant="h6"
-                component="h2"
-              >
-                Text in a modal
-              </Typography>
-              <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-              </Typography>
+              <h1>Edit</h1>
+              <form style={{display: "flex", flexDirection: "column",alignItems:"center",justifyContent:"center", gap: 20}} onSubmit={handleEdit}>
+                    <TextField
+                    id="code"
+                    label="code"
+                    variant="outlined"
+                    type="text"
+                    defaultValue={form.code}
+                    inputProps={{ maxLength: 5 }}
+                  />
+                  <TextField
+                    id="name"
+                    label="name"
+                    variant="outlined"
+                    type="text"
+                    defaultValue={form.name}
+
+                  />
+                  <TextField
+                    id="description"
+                    label="description"
+                    variant="outlined"
+                    type="text"
+                    defaultValue={form.description}
+                  />
+                  <Button variant="contained" color="success" type="submit">
+                    Confirm
+                  </Button>
+                </form>
+
             </Box>
           ) : (
             <Box sx={style} border={"2px solid red"}>
               <h1 align="center">Delete form</h1>
               <Box >
                 <form style={{display: "flex", flexDirection: "column",alignItems:"center",justifyContent:"center", gap: 20}} onSubmit={handleDelete}>
-                  <TextField
-                    id="id"
-                    label="id"
-                    variant="outlined"
-                    type="number"
-                  />
+                  <Typography>Form with Id: {form.id}</Typography>
                   <Button variant="contained" color="error" type="submit">
                     Confirm
                   </Button>

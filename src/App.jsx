@@ -38,9 +38,10 @@ function App() {
   async function fetchData() {
     setLoading(true);
     console.log("fetching data...");
-    // aqui va el fetch para traer los datos
-    setData(data);
-    setFilteredData(data);
+    const response = await fetch("http://20.231.202.18:8000/api/form");
+    const forms = await response.json();
+    setData(forms);
+    setFilteredData(forms);
     setLoading(false);
   }
 
@@ -68,16 +69,6 @@ function App() {
                 <TableCell align="center">NAME</TableCell>
                 <TableCell align="center">DESCRIPTION</TableCell>
                 <TableCell align="center">ACTIONS 
-                <Stack
-                      direction="row"
-                      spacing={1}
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                    >
-                      <TransitionsModal type={"edit"} updateTable={fetchData}/>
-                      <TransitionsModal type={"delete"} updateTable={fetchData}/>
-                      
-                    </Stack>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -94,6 +85,18 @@ function App() {
                   </TableCell>
                   <TableCell align="center">{item.name}</TableCell>
                   <TableCell align="center">{item.description}</TableCell>
+                  <TableCell>
+                  <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <TransitionsModal type={"edit"} form={item} />
+                      <TransitionsModal type={"delete"} form={item} />
+                      
+                    </Stack>
+                  </TableCell>
                 </TableRow>
               ))}
                 </>
