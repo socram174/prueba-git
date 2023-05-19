@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useContext } from "react";
+import { DataContext } from "./App";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -25,12 +27,14 @@ export default function TransitionsModal({ type,updateTable }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const {setData,setFilteredData} = useContext(DataContext);
 
   const handleDelete = async (e) => {
     e.preventDefault();
     const formId = e.target.id.value;
-    //Aqui va el fetch para borrar
-    updateTable();
+    //aqui va el fetch para borrar
+    setData(data);
+    setFilteredData(data);
   };
 
   return (

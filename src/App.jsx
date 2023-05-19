@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,createContext } from "react";
 import "./App.css";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,6 +11,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TransitionsModal from "./modal";
 
+export const DataContext = createContext();
 
 function App() {
   const [data, setData] = useState([]);
@@ -37,9 +38,9 @@ function App() {
   async function fetchData() {
     setLoading(true);
     console.log("fetching data...");
-    //aqui va el fetch para obtener los datos
-    setData(forms);
-    setFilteredData(forms);
+    // aqui va el fetch para traer los datos
+    setData(data);
+    setFilteredData(data);
     setLoading(false);
   }
 
@@ -50,6 +51,7 @@ function App() {
 
   return (
     <>
+    <DataContext.Provider value={{setData,setFilteredData}}>
       <div>
         <input
           type="text"
@@ -100,6 +102,7 @@ function App() {
           </Table>
         </TableContainer>
       </div>
+      </DataContext.Provider>
     </>
   );
 }
