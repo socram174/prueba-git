@@ -29,10 +29,7 @@ export default function TransitionsModal({ type,updateTable }) {
   const handleDelete = async (e) => {
     e.preventDefault();
     const formId = e.target.id.value;
-    fetch(`http://20.231.202.18:8000/api/form/${formId}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    });
+    //Aqui va el fetch para borrar
     updateTable();
   };
 
@@ -88,8 +85,8 @@ export default function TransitionsModal({ type,updateTable }) {
           ) : (
             <Box sx={style} border={"2px solid red"}>
               <h1 align="center">Delete form</h1>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <form onSubmit={handleDelete}>
+              <Box >
+                <form style={{display: "flex", flexDirection: "column",alignItems:"center",justifyContent:"center", gap: 20}} onSubmit={handleDelete}>
                   <TextField
                     id="id"
                     label="id"

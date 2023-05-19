@@ -37,8 +37,7 @@ function App() {
   async function fetchData() {
     setLoading(true);
     console.log("fetching data...");
-    const response = await fetch("http://20.231.202.18:8000/api/form");
-    const forms = await response.json();
+    //aqui va el fetch para obtener los datos
     setData(forms);
     setFilteredData(forms);
     setLoading(false);
@@ -48,10 +47,6 @@ function App() {
     fetchData().then(() => {setLoading(false)});
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(e.target.name.value);
-  };
 
   return (
     <>
@@ -89,7 +84,7 @@ function App() {
                 <>
                                 {filteredData.map((item) => (
                 <TableRow
-                  key={item.name}
+                  key={item.name + item.code}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell align="center" component="th" scope="row">
